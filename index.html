@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 26.2.3.2 (Linux)"/>
+	<meta name="created" content="00:00:00"/>
+	<meta name="changed" content="00:00:00"/>
+	<style type="text/css">
+		@page { size: 8.27in 11.69in; margin: 0.79in }
+		p { margin-bottom: 0.1in; line-height: 115%; background: transparent }
+		pre { font-size: 10pt; font-family: "Liberation Mono", monospace; background: transparent }
+	</style>
+</head>
+<body lang="en-US" link="#000080" vlink="#800000" dir="ltr"><pre>&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;title&gt;VISHUUU | 05.10&lt;/title&gt;
+    &lt;link href=&quot;https://fonts.googleapis.com/css2?family=Syncopate:wght@700&amp;family=Inter:wght@300;600&amp;display=swap&quot; rel=&quot;stylesheet&quot;&gt;
+    &lt;style&gt;
+        :root {
+            --accent: #00f2ff;
+            --secondary: #7000ff;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #050505;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Animated Background */
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .main-container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 420px;
+            perspective: 1000px;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .profile-img {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            margin: 0 auto 25px;
+            object-fit: cover;
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.2);
+            display: block;
+        }
+
+        h1 {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            color: var(--accent);
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+        }
+
+        .typing-area {
+            min-height: 220px;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: left;
+            font-weight: 300;
+        }
+
+        .highlight {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .btn-trigger {
+            background: transparent;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 12px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Syncopate', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            transition: all 0.4s ease;
+            margin-top: 20px;
+        }
+
+        .btn-trigger:hover {
+            background: var(--accent);
+            color: #000;
+            box-shadow: 0 0 20px var(--accent);
+        }
+
+        .cursor {
+            width: 8px;
+            height: 18px;
+            background: var(--accent);
+            display: inline-block;
+            vertical-align: middle;
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink { 50% { opacity: 0; } }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;canvas id=&quot;canvas&quot;&gt;&lt;/canvas&gt;
+
+&lt;div class=&quot;main-container&quot;&gt;
+    &lt;div class=&quot;glass-card&quot; id=&quot;card&quot;&gt;
+        &lt;img src=&quot;https://i.ibb.co/G3dkYGKR/vishwa.jpg&quot; class=&quot;profile-img&quot; alt=&quot;Vishuuu&quot;&gt;
+        &lt;h1&gt;VISHUUU&lt;/h1&gt;
+        
+        &lt;div class=&quot;typing-area&quot; id=&quot;output&quot;&gt;&lt;/div&gt;
+        &lt;button class=&quot;btn-trigger&quot; id=&quot;startBtn&quot; onclick=&quot;initMessage()&quot;&gt;INITIALIZE MESSAGE&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+    // Particle Background Logic
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 1.5;
+            this.speedX = Math.random() * 0.5 - 0.25;
+            this.speedY = Math.random() * 0.5 - 0.25;
+        }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.x &gt; canvas.width) this.x = 0;
+            if (this.x &lt; 0) this.x = canvas.width;
+            if (this.y &gt; canvas.height) this.y = 0;
+            if (this.y &lt; 0) this.y = canvas.height;
+        }
+        draw() {
+            ctx.fillStyle = 'rgba(0, 242, 255, 0.3)';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    for (let i = 0; i &lt; 100; i++) particles.push(new Particle());
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p =&gt; { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Typing Logic
+    const message = [
+        &quot;You must be missing my “hiiii” voice... 🎙️&quot;,
+        &quot;I called you but you were busy, so I thought let me wish you differently this time.&quot;,
+        &quot;Btw, I remember your birthday... see? ✨&quot;,
+        &quot;But since I am out of town, this is my personal robot keeping the tradition alive. 🤖&quot;,
+        &quot;I will call you in the evening right after my flight takes off. ✈️&quot;,
+        &quot;Happy Birthday, Vishuuu! ❤️&quot;
+    ];
+
+    let lineIndex = 0;
+    let charIndex = 0;
+    const output = document.getElementById('output');
+    const startBtn = document.getElementById('startBtn');
+
+    function initMessage() {
+        startBtn.style.display = 'none';
+        typeLine();
+    }
+
+    function typeLine() {
+        if (lineIndex &lt; message.length) {
+            let currentLine = document.createElement('p');
+            if(lineIndex === 2 || lineIndex === 5) currentLine.className = 'highlight';
+            output.appendChild(currentLine);
+            typeChar(currentLine, message[lineIndex]);
+        }
+    }
+
+    function typeChar(element, text) {
+        if (charIndex &lt; text.length) {
+            element.innerHTML += text.charAt(charIndex);
+            charIndex++;
+            setTimeout(() =&gt; typeChar(element, text), 40);
+        } else {
+            charIndex = 0;
+            lineIndex++;
+            setTimeout(typeLine, 600);
+        }
+    }
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+</body>
+</html>
