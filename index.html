@@ -10,16 +10,13 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none; /* better touch experience, text selection still allowed on typing area */
         }
 
         :root {
             --accent: #00f2ff;
             --accent-glow: rgba(0, 242, 255, 0.6);
             --purple-deep: #7000ff;
-            --bg-deep: #03030f;
-            --glass-bg: rgba(15, 15, 35, 0.35);
-            --border-glow: rgba(0, 242, 255, 0.3);
+            --glass-bg: rgba(15, 15, 35, 0.4);
         }
 
         body, html {
@@ -31,7 +28,7 @@
             font-family: 'Inter', sans-serif;
             overflow: hidden;
             position: fixed;
-            touch-action: pan-x pan-y; /* prevent zoom interference but allow scroll? we want no body scroll */
+            touch-action: pan-x pan-y;
         }
 
         /* particle canvas background */
@@ -43,27 +40,27 @@
             height: 100%;
             display: block;
             z-index: 1;
-            pointer-events: none; /* allow clicking through */
+            pointer-events: none;
         }
 
-        /* main container - 3D perspective */
+        /* main container - gentle floating animation (no tilt) */
         .main-container {
             position: relative;
             z-index: 20;
             width: 90%;
             max-width: 460px;
             margin: 0 auto;
-            perspective: 1200px;
-            animation: floatContainer 6s infinite ease-in-out;
+            animation: floatContainer 5s infinite ease-in-out;
+            will-change: transform;
         }
 
         @keyframes floatContainer {
             0% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
+            50% { transform: translateY(-6px); }
             100% { transform: translateY(0px); }
         }
 
-        /* glass card with animated gradient border */
+        /* glass card - stable, no trembling */
         .glass-card {
             background: var(--glass-bg);
             backdrop-filter: blur(18px);
@@ -72,12 +69,12 @@
             padding: 36px 24px 42px;
             text-align: center;
             box-shadow: 0 40px 70px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 242, 255, 0.2);
-            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transition: box-shadow 0.3s ease;
             position: relative;
             overflow: hidden;
         }
 
-        /* animated border shine */
+        /* animated border shine (non-interactive, looks great) */
         .glass-card::before {
             content: '';
             position: absolute;
@@ -89,39 +86,16 @@
             border-radius: 50px;
             z-index: -1;
             opacity: 0;
-            transition: opacity 0.5s;
             animation: borderPulse 4s linear infinite;
-        }
-
-        .glass-card:hover::before {
-            opacity: 0.3;
         }
 
         @keyframes borderPulse {
             0% { filter: blur(0px); opacity: 0.2; }
-            50% { filter: blur(6px); opacity: 0.6; }
+            50% { filter: blur(6px); opacity: 0.5; }
             100% { filter: blur(0px); opacity: 0.2; }
         }
 
-        /* inner shine */
-        .glass-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 80%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-            transform: skewX(-25deg);
-            transition: left 0.7s;
-            pointer-events: none;
-        }
-
-        .glass-card:hover::after {
-            left: 150%;
-        }
-
-        /* profile image with spin/glow animation */
+        /* profile image with rotation ring */
         .profile-wrapper {
             position: relative;
             width: 140px;
@@ -135,13 +109,9 @@
             border-radius: 50%;
             object-fit: cover;
             border: 2.5px solid var(--accent);
-            box-shadow: 0 0 25px var(--accent-glow), 0 0 5px rgba(0,242,255,0.5);
-            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 0 25px var(--accent-glow);
+            transition: transform 0.2s;
             animation: imageGlow 3s infinite alternate;
-        }
-
-        .profile-img:active {
-            transform: scale(0.98);
         }
 
         @keyframes imageGlow {
@@ -149,7 +119,6 @@
             100% { box-shadow: 0 0 30px var(--accent-glow); border-color: #a877ff; }
         }
 
-        /* decorative ring around profile */
         .profile-ring {
             position: absolute;
             top: -8px;
@@ -169,15 +138,14 @@
 
         h1 {
             font-family: 'Syncopate', sans-serif;
-            font-size: 1.6rem;
-            letter-spacing: 6px;
+            font-size: 1.5rem;
+            letter-spacing: 5px;
             text-transform: uppercase;
             margin: 18px 0 14px;
             background: linear-gradient(135deg, #fff, var(--accent), #b77aff);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 0 0 20px rgba(0,242,255,0.3);
         }
 
         .birthday-badge {
@@ -192,7 +160,6 @@
             color: var(--accent);
             border: 0.5px solid var(--accent);
             margin-bottom: 20px;
-            font-family: 'Syncopate', monospace;
         }
 
         /* typing area */
@@ -214,26 +181,18 @@
 
         .typing-area p {
             margin: 0 0 12px;
-            animation: fadeSlideUp 0.35s ease-out forwards;
-            transform-origin: top;
+            animation: fadeSlideUp 0.3s ease-out forwards;
         }
 
         @keyframes fadeSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .highlight {
             color: var(--accent);
             font-weight: 700;
             text-shadow: 0 0 8px rgba(0,242,255,0.4);
-            font-size: 1.05rem;
         }
 
         .cursor {
@@ -245,12 +204,11 @@
             margin-left: 4px;
             border-radius: 5px;
             animation: blink 0.9s infinite;
-            box-shadow: 0 0 5px var(--accent);
         }
 
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+        @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
 
-        /* button styling */
+        /* button group */
         .btn-group {
             display: flex;
             justify-content: center;
@@ -270,19 +228,18 @@
             font-size: 0.75rem;
             font-weight: 600;
             letter-spacing: 2.5px;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
             backdrop-filter: blur(8px);
             box-shadow: 0 0 6px rgba(0,242,255,0.2);
         }
 
-        .neon-btn:hover, .neon-btn:active {
+        .neon-btn:active {
             background: var(--accent);
             color: #030303;
-            box-shadow: 0 0 20px var(--accent), 0 0 35px rgba(0,242,255,0.5);
-            transform: scale(1.02);
-            border-color: white;
+            transform: scale(0.97);
         }
 
+        /* music toggle */
         .music-toggle {
             position: fixed;
             bottom: 20px;
@@ -307,14 +264,14 @@
             transform: scale(0.92);
         }
 
-        /* mobile tweaks */
+        /* mobile adjustments */
         @media (max-width: 550px) {
             .glass-card {
                 padding: 26px 16px 32px;
                 border-radius: 40px;
             }
             .typing-area {
-                min-height: 250px;
+                min-height: 240px;
                 font-size: 0.9rem;
                 padding: 14px 16px;
             }
@@ -332,14 +289,13 @@
             }
         }
 
-        /* subtle particles effect overlay and performance */
+        /* reduced motion for accessibility */
         @media (prefers-reduced-motion: reduce) {
             * {
                 animation-duration: 0.01ms !important;
             }
         }
     </style>
-    <!-- canvas confetti library (lightweight + professional) -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
 </head>
 <body>
@@ -347,7 +303,7 @@
 <canvas id="particle-canvas"></canvas>
 
 <div class="main-container">
-    <div class="glass-card" id="tiltCard">
+    <div class="glass-card">
         <div class="profile-wrapper">
             <div class="profile-ring"></div>
             <img src="https://i.ibb.co/G3dkYGKR/vishwa.jpg" class="profile-img" alt="Vishuuu" onerror="this.src='https://via.placeholder.com/140?text=VISHU'">
@@ -369,13 +325,12 @@
 
 <script>
     (function() {
-        // ---------- ENHANCED PARTICLE SYSTEM WITH CONNECTIONS ----------
+        // ========== 1. ENHANCED PARTICLE SYSTEM (with connections, mobile-optimized) ==========
         const canvas = document.getElementById('particle-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
-        let particleCount = 90;
-        let mouseX = null, mouseY = null;
-        let connectionDistance = 130;
+        let connectionDistance = 120;
+        let particleCount = 70;  // reduced for smoothness on mobile
         
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -391,9 +346,9 @@
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2.2 + 0.6;
-                this.speedX = (Math.random() - 0.5) * 0.35;
-                this.speedY = (Math.random() - 0.5) * 0.35;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.speedY = (Math.random() - 0.5) * 0.3;
                 this.color = `rgba(0, ${Math.floor(180 + Math.random() * 75)}, 255, ${Math.random() * 0.5 + 0.2})`;
             }
             update() {
@@ -403,26 +358,13 @@
                 if (this.x < 0) this.x = canvas.width;
                 if (this.y > canvas.height) this.y = 0;
                 if (this.y < 0) this.y = canvas.height;
-                
-                // subtle mouse interaction: gentle repulse if near (makes it lively)
-                if (mouseX !== null && mouseY !== null) {
-                    let dx = this.x - mouseX;
-                    let dy = this.y - mouseY;
-                    let dist = Math.hypot(dx, dy);
-                    if (dist < 100) {
-                        let angle = Math.atan2(dy, dx);
-                        let force = (100 - dist) / 1000;
-                        this.x += Math.cos(angle) * force * 1.2;
-                        this.y += Math.sin(angle) * force * 1.2;
-                    }
-                }
             }
             draw() {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
                 ctx.fill();
-                ctx.shadowBlur = 8;
+                ctx.shadowBlur = 6;
                 ctx.shadowColor = "#00f2ff80";
                 ctx.fill();
                 ctx.shadowBlur = 0;
@@ -431,7 +373,7 @@
         
         function initParticles() {
             particles = [];
-            let count = window.innerWidth < 700 ? 70 : particleCount;
+            let count = window.innerWidth < 700 ? 50 : particleCount;
             for (let i = 0; i < count; i++) {
                 particles.push(new Particle());
             }
@@ -444,12 +386,12 @@
                     const dy = particles[i].y - particles[j].y;
                     const dist = Math.hypot(dx, dy);
                     if (dist < connectionDistance) {
-                        const opacity = (1 - dist / connectionDistance) * 0.25;
+                        const opacity = (1 - dist / connectionDistance) * 0.2;
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
                         ctx.strokeStyle = `rgba(0, 210, 255, ${opacity})`;
-                        ctx.lineWidth = 0.8;
+                        ctx.lineWidth = 0.7;
                         ctx.stroke();
                     }
                 }
@@ -466,64 +408,18 @@
             requestAnimationFrame(animateParticles);
         }
         
-        // track mouse/touch for subtle particle warp
-        function handleMove(e) {
-            const rect = canvas.getBoundingClientRect();
-            let clientX, clientY;
-            if (e.touches) {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            } else {
-                clientX = e.clientX;
-                clientY = e.clientY;
-            }
-            mouseX = clientX;
-            mouseY = clientY;
-            setTimeout(() => {
-                if (!e.touches) mouseX = null;
-            }, 150);
-        }
-        window.addEventListener('mousemove', handleMove);
-        window.addEventListener('touchmove', handleMove);
-        window.addEventListener('touchend', () => { mouseX = null; });
-        
         initParticles();
         animateParticles();
         
-        // ----- 3D TILT on glass card (works on both mouse and touch with orientation offset) -----
-        const card = document.getElementById('tiltCard');
-        let tiltActive = false;
-        function handleTilt(e) {
-            if (!card) return;
-            const rect = card.getBoundingClientRect();
-            let x, y;
-            if (e.touches) {
-                x = e.touches[0].clientX;
-                y = e.touches[0].clientY;
-            } else {
-                x = e.clientX;
-                y = e.clientY;
-            }
-            const cardCenterX = rect.left + rect.width / 2;
-            const cardCenterY = rect.top + rect.height / 2;
-            const rotateX = (y - cardCenterY) / 25;
-            const rotateY = (x - cardCenterX) / 25;
-            card.style.transform = `perspective(1200px) rotateX(${-rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
-        }
-        function resetTilt() {
-            if (card) card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg) translateY(0px)`;
-        }
-        card.addEventListener('mousemove', handleTilt);
-        card.addEventListener('mouseleave', resetTilt);
-        card.addEventListener('touchmove', handleTilt, { passive: false });
-        card.addEventListener('touchend', resetTilt);
+        // ========== 2. NO TILT / NO TREMBLING: only clean static card with floating container ==========
+        // (all tilt event listeners removed for perfect stability on mobile)
         
-        // ------- TYPING MACHINE WITH ELEGANT TIMING AND REPLAY FEATURE -------
+        // ========== 3. TYPING MACHINE WITH REPLAY AND CONFETTI ==========
         const messageSequence = [
             "You must be missing my “hiiii” voice... 🎙️",
             "I called you but you were busy, so I thought let me wish you differently this time.",
             "Btw, I remember your birthday... see? ✨",
-            "But since I am out of town, this is my personal robot keeping the tradition alive. 🤖",
+            "But since I am out of town, So i could not call youuu again",
             "I will call you in the evening right after my flight takes off. ✈️",
             "Happy Birthday, Vishuuu! ❤️🎂🌟"
         ];
@@ -532,7 +428,7 @@
         let charIndex = 0;
         let isTypingActive = false;
         let timeoutsQueue = [];
-        let currentOutputDiv = document.getElementById('output');
+        const outputDiv = document.getElementById('output');
         const startBtn = document.getElementById('startBtn');
         const buttonGroup = document.getElementById('buttonGroup');
         
@@ -544,12 +440,11 @@
         function resetTypingUI() {
             clearTypingTimeouts();
             isTypingActive = false;
-            if (currentOutputDiv) currentOutputDiv.innerHTML = '';
+            if (outputDiv) outputDiv.innerHTML = '';
             lineIndex = 0;
             charIndex = 0;
         }
         
-        // confetti celebration
         function burstConfetti() {
             canvasConfetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, startVelocity: 18, colors: ['#00f2ff', '#7000ff', '#ffffff'] });
             canvasConfetti({ particleCount: 60, spread: 120, origin: { y: 0.7, x: 0.3 }, startVelocity: 12 });
@@ -559,9 +454,7 @@
             }, 150);
         }
         
-        // Show replay button after completion
         function showReplayButton() {
-            // remove any existing replay button to avoid duplication
             const existingReplay = document.getElementById('replayBtn');
             if (existingReplay) existingReplay.remove();
             const replayBtn = document.createElement('button');
@@ -584,24 +477,21 @@
             if (isTypingActive) return;
             resetTypingUI();
             removeReplayButton();
-            // make sure start button is hidden (exists only if not started)
-            if (startBtn && startBtn.style.display !== 'none') startBtn.style.display = 'none';
+            if (startBtn) startBtn.style.display = 'none';
             isTypingActive = true;
             startTypingSequence();
         }
         
-        // Typewriter core
         function typeLine() {
             if (!isTypingActive) return;
             if (lineIndex < messageSequence.length) {
                 const p = document.createElement('p');
                 if (lineIndex === 2 || lineIndex === 5) p.classList.add('highlight');
-                currentOutputDiv.appendChild(p);
+                outputDiv.appendChild(p);
                 typeCharacter(p, messageSequence[lineIndex]);
             } else {
-                // END OF MESSAGES
                 isTypingActive = false;
-                burstConfetti();   // CELEBRATION
+                burstConfetti();
                 showReplayButton();
             }
         }
@@ -616,7 +506,7 @@
             } else {
                 charIndex = 0;
                 lineIndex++;
-                const tid = setTimeout(() => typeLine(), 500);
+                const tid = setTimeout(() => typeLine(), 520);
                 timeoutsQueue.push(tid);
             }
         }
@@ -630,7 +520,6 @@
             typeLine();
         }
         
-        // initial trigger from start button
         function initMessage() {
             if (isTypingActive) return;
             if (startBtn) startBtn.style.display = 'none';
@@ -641,8 +530,7 @@
             startBtn.addEventListener('click', initMessage);
         }
         
-        // ---------- AUDIO: optional subtle retro beep? but we'll add a simple sound toggle using Web Audio (gentle birthday chime) ----------
-        // Just a tiny optional tone that can be played on request (no autoplay)
+        // ========== 4. AUDIO TOGGLE (gentle birthday chime) ==========
         let audioCtx = null;
         let audioEnabled = false;
         const musicBtn = document.getElementById('musicToggleBtn');
@@ -661,9 +549,9 @@
                 osc.frequency.value = 1046.5; // C6
                 gain.gain.value = 0.2;
                 osc.start();
-                gain.gain.exponentialRampToValueAtTime(0.00001, now + 1);
+                gain.gain.exponentialRampToValueAtTime(0.00001, now + 0.9);
                 osc.stop(now + 0.8);
-                // second note
+                
                 const osc2 = audioCtx.createOscillator();
                 const gain2 = audioCtx.createGain();
                 osc2.connect(gain2);
@@ -671,9 +559,9 @@
                 osc2.frequency.value = 1318.52;
                 gain2.gain.value = 0.15;
                 osc2.start(now + 0.2);
-                gain2.gain.exponentialRampToValueAtTime(0.00001, now + 1.2);
+                gain2.gain.exponentialRampToValueAtTime(0.00001, now + 1.1);
                 osc2.stop(now + 1);
-            } catch(e) { console.log("audio context not ready"); }
+            } catch(e) { console.log("audio not ready"); }
         }
         
         musicBtn.addEventListener('click', () => {
@@ -693,56 +581,71 @@
             }
         });
         
-        // allow to pre-init audio context on first tap (due to browser policies)
-        function preInitAudio() {
+        // Pre-warm audio context on first user tap (required by browsers)
+        function warmAudioContext() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 audioCtx.suspend();
             }
         }
-        document.body.addEventListener('touchstart', preInitAudio, { once: true });
-        document.body.addEventListener('click', preInitAudio, { once: true });
+        document.body.addEventListener('touchstart', warmAudioContext, { once: true });
+        document.body.addEventListener('click', warmAudioContext, { once: true });
         
-        // Extra sparkle effect: add floating emoji on click? subtle but fun
+        // ========== 5. SPARKLE ON CARD CLICK (delightful but stable) ==========
+        const card = document.querySelector('.glass-card');
         function createFloatingHeart(x, y) {
-            const heart = document.createElement('div');
-            heart.innerText = '✨🎂';
-            heart.style.position = 'fixed';
-            heart.style.left = x + 'px';
-            heart.style.top = y + 'px';
-            heart.style.fontSize = '28px';
-            heart.style.pointerEvents = 'none';
-            heart.style.zIndex = '999';
-            heart.style.opacity = '0.9';
-            heart.style.filter = 'drop-shadow(0 0 4px cyan)';
-            heart.style.transition = 'all 1s ease-out';
-            document.body.appendChild(heart);
+            const emoji = document.createElement('div');
+            emoji.innerText = '✨🎂';
+            emoji.style.position = 'fixed';
+            emoji.style.left = x + 'px';
+            emoji.style.top = y + 'px';
+            emoji.style.fontSize = '26px';
+            emoji.style.pointerEvents = 'none';
+            emoji.style.zIndex = '999';
+            emoji.style.opacity = '0.9';
+            emoji.style.filter = 'drop-shadow(0 0 4px cyan)';
+            emoji.style.transition = 'all 0.8s ease-out';
+            document.body.appendChild(emoji);
             requestAnimationFrame(() => {
-                heart.style.transform = 'translateY(-70px) rotate(10deg)';
-                heart.style.opacity = '0';
+                emoji.style.transform = 'translateY(-65px) rotate(12deg)';
+                emoji.style.opacity = '0';
             });
-            setTimeout(() => heart.remove(), 1000);
+            setTimeout(() => emoji.remove(), 900);
         }
         
-        // click/tap anywhere on card to produce spark (delightful)
         card.addEventListener('click', (e) => {
+            // avoid triggering on buttons inside card
             if (e.target.closest('.neon-btn')) return;
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX || (e.touches ? e.touches[0].clientX : rect.left + rect.width/2);
-            const y = e.clientY || (e.touches ? e.touches[0].clientY : rect.top + rect.height/2);
-            createFloatingHeart(x, y);
-            if (audioEnabled) playBirthdayChime();
+            let clientX = e.clientX;
+            let clientY = e.clientY;
+            // fallback for touch
+            if (!clientX && e.touches) {
+                clientX = e.touches[0]?.clientX;
+                clientY = e.touches[0]?.clientY;
+            }
+            if (clientX && clientY) {
+                createFloatingHeart(clientX, clientY);
+                if (audioEnabled) playBirthdayChime();
+            }
         });
         
-        // Welcome subtle greeting: console elegance
-        console.log("%c✨🌟 HAPPY BIRTHDAY VISHUUU! 🌟✨", "color: #00f2ff; font-size: 16px; font-weight: bold; font-family: monospace;");
+        // Also handle touch separately to avoid any conflict
+        card.addEventListener('touchstart', (e) => {
+            if (e.target.closest('.neon-btn')) return;
+            const touch = e.touches[0];
+            if (touch) {
+                createFloatingHeart(touch.clientX, touch.clientY);
+                if (audioEnabled) playBirthdayChime();
+            }
+        });
         
-        // For mobile ensure that the scrolling of typing area doesn't drag page
+        // ========== 6. FIX SCROLLING INSIDE TYPING AREA ==========
         const typingDiv = document.getElementById('output');
         typingDiv.addEventListener('touchstart', (e) => e.stopPropagation());
         typingDiv.addEventListener('touchmove', (e) => e.stopPropagation());
         
-        // initial state ready
+        // small console greeting
+        console.log("%c✨🌟 HAPPY BIRTHDAY VISHUUU! ✨🌟", "color:#00f2ff;font-size:14px;font-weight:bold");
     })();
 </script>
 </body>
